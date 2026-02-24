@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "sendingmessages"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+flake8 = "^7.3.0"
+black = "^26.1.0"
+isort = "^8.0.0"
+django = "^6.0.2"
+python-dotenv = "^1.2.1"
+psycopg2-binary = "^2.9.11"
+redis = "^7.2.0"
+django-redis = "^6.0.0"
+pillow = "^12.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+# Максимальная длина строки
+line-length = 119
+# Файлы, которые не нужно форматировать
+exclude = '''
+(
+  /(
+      \.eggs         # Исключить несколько общих каталогов
+    | \.git          # в корне проекта
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | dist
+  )/
+  | foo.py           # Также отдельно исключить файл с именем foo.py
+                     # в корне проекта
+)
+'''
+
+[tool.isort]
+line_length = 119
