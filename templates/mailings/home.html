@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Добро пожаловать в сервис рассылок!</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Всего рассылок</div>
+                <div class="card-body">
+                    <h5 class="card-title display-4">{{ total_mailings }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Активных рассылок</div>
+                <div class="card-body">
+                    <h5 class="card-title display-4">{{ active_mailings }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">Получателей</div>
+                <div class="card-body">
+                    <h5 class="card-title display-4">{{ total_recipients }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if user.is_authenticated and attempts_stats %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Статистика попыток рассылок</h4>
+                </div>
+                <div class="card-body">
+                    <canvas id="attemptsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>О сервисе</h4>
+                </div>
+                <div class="card-body">
+                    <p>Наш сервис позволяет создавать и управлять email-рассылками. Основные возможности:</p>
+                    <ul>
+                        <li>Создание и управление получателями рассылок</li>
+                        <li>Создание шаблонов сообщений</li>
+                        <li>Планирование рассылок по времени</li>
+                        <li>Отслеживание статусов отправки</li>
+                        <li>Статистика и отчеты по рассылкам</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated and attempts_stats %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('attemptsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [{% for stat in attempts_stats %}'{{ stat.status }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for stat in attempts_stats %}{{ stat.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: ['#28a745', '#dc3545']
+            }]
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}
