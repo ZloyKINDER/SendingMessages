@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Сообщения{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Мои сообщения</h1>
+        <a href="{% url 'mailings:message_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus"></i> Создать сообщение
+        </a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Тема</th>
+                    <th>Дата создания</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in messages %}
+                <tr>
+                    <td>{{ message.subject }}</td>
+                    <td>{{ message.created_at|date:"d.m.Y H:i" }}</td>
+                    <td>
+                        <a href="{% url 'mailings:message_detail' message.pk %}" class="btn btn-sm btn-info">Просмотр</a>
+                        <a href="{% url 'mailings:message_update' message.pk %}" class="btn btn-sm btn-warning">Редактировать</a>
+                        <a href="{% url 'mailings:message_delete' message.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">Нет сообщений</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

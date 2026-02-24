@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Подтверждение email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Подтверждение email</h2>
+        </div>
+        <div class="content">
+            <p>Здравствуйте, {{ user.email }}!</p>
+            <p>Благодарим вас за регистрацию на нашем сервисе. Для завершения регистрации, пожалуйста, подтвердите ваш email, перейдя по ссылке ниже:</p>
+
+            <div style="text-align: center;">
+                <a href="{{ verification_url }}" class="button">Подтвердить email</a>
+            </div>
+
+            <p>Если ссылка не работает, скопируйте и вставьте в браузер следующий адрес:</p>
+            <p style="word-break: break-all;">{{ verification_url }}</p>
+
+            <p>Ссылка действительна в течение 24 часов.</p>
+
+            <p>Если вы не регистрировались на нашем сервисе, просто проигнорируйте это письмо.</p>
+        </div>
+        <div class="footer">
+            <p>С уважением, команда Сервиса рассылок</p>
+        </div>
+    </div>
+</body>
+</html>

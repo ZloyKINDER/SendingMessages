@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.subject }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ object.subject }}</h1>
+        <div>
+            <a href="{% url 'mailings:message_update' object.pk %}" class="btn btn-warning">Редактировать</a>
+            <a href="{% url 'mailings:message_delete' object.pk %}" class="btn btn-danger">Удалить</a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Содержание сообщения</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Тема:</strong> {{ object.subject }}</p>
+                    <p><strong>Текст:</strong></p>
+                    <div class="border p-3 bg-light">
+                        {{ object.body|linebreaks }}
+                    </div>
+                    <p class="text-muted mt-3">
+                        <small>Создано: {{ object.created_at|date:"d.m.Y H:i" }}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Рассылки с этим сообщением</h5>
+                </div>
+                <div class="card-body">
+                    {% if object.mailings.exists %}
+                        <ul class="list-group">
+                            {% for mailing in object.mailings.all %}
+                                <li class="list-group-item">
+                                    <a href="{% url 'mailings:mailing_detail' mailing.pk %}">
+                                        Рассылка #{{ mailing.id }}
+                                    </a>
+                                    <br>
+                                    <small class="text-muted">
+                                        Статус: {{ mailing.get_dynamic_status }}
+                                    </small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Нет рассылок с этим сообщением</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

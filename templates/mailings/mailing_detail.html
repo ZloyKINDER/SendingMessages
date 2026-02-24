@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Рассылка #{{ object.id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Рассылка #{{ object.id }}</h1>
+        <div>
+            {% if object.owner == user or perms.mailings.can_disable_mailing %}
+                <a href="{% url 'mailings:toggle_mailing' object.pk %}" class="btn btn-warning">
+                    {% if object.is_active %}Отключить{% else %}Включить{% endif %}
+                </a>
+            {% endif %}
+
+            {% if object.owner == user %}
+                <a href="{% url 'mailings:send_mailing' object.pk %}" class="btn btn-success">
+                    Запустить сейчас
+                </a>
+                <a href="{% url 'mailings:mailing_update' object.pk %}" class="btn btn-warning">Редактировать</a>
+                <a href="{% url 'mailings:mailing_delete' object.pk %}" class="btn btn-danger">Удалить</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Информация о рассылке</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Дата начала:</strong> {{ object.start_time|date:"d.m.Y H:i" }}</p>
+                    <p><strong>Дата окончания:</strong> {{ object.end_time|date:"d.m.Y H:i" }}</p>
+                    <p><strong>Статус:</strong> 
+                        {% if dynamic_status == 'created' %}
+                            <span class="badge bg-secondary">Создана</span>
+                        {% elif dynamic_status == 'started' %}
+                            <span class="badge bg-success">Запущена</span>
+                        {% else %}
+                            <span class="badge bg-danger">Завершена</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Активна:</strong> 
+                        {% if object.is_active %}
+                            <span class="badge bg-success">Да</span>
+                        {% else %}
+                            <span class="badge bg-danger">Нет</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Сообщение</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ object.message.subject }}</h6>
+                    <p>{{ object.message.body|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Получатели ({{ object.recipients.count }})</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Ф.И.О.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recipient in object.recipients.all %}
+                        <tr>
+                            <td>{{ recipient.email }}</td>
+                            <td>{{ recipient.full_name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>Последние попытки отправки</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Дата и время</th>
+                            <th>Получатель</th>
+                            <th>Статус</th>
+                            <th>Ответ сервера</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if object.owner == user or perms.mailings.can_view_all_mailings %}
+                        {% for attempt in attempts %}
+                        <tr>
+                            <td>{{ attempt.attempt_time|date:"d.m.Y H:i:s" }}</td>
+                            <td>{{ attempt.recipient.email }}</td>
+                            <td>
+                                {% if attempt.status == 'success' %}
+                                    <span class="badge bg-success">Успешно</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Ошибка</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ attempt.server_response|truncatechars:50 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">Нет попыток отправки</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">У вас нет прав для просмотра этой информации</p>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Получатели{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Мои получатели</h1>
+        <a href="{% url 'mailings:recipient_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus"></i> Добавить получателя
+        </a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Ф.И.О.</th>
+                    <th>Комментарий</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for recipient in recipients %}
+                <tr>
+                    <td>{{ recipient.email }}</td>
+                    <td>{{ recipient.full_name }}</td>
+                    <td>{{ recipient.comment|truncatechars:50 }}</td>
+                    <td>
+                        <a href="{% url 'mailings:recipient_detail' recipient.pk %}" class="btn btn-sm btn-info">Просмотр</a>
+                        <a href="{% url 'mailings:recipient_update' recipient.pk %}" class="btn btn-sm btn-warning">Редактировать</a>
+                        <a href="{% url 'mailings:recipient_delete' recipient.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">Нет получателей</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

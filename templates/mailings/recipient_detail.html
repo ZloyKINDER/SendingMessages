@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.full_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ object.full_name }}</h1>
+        <div>
+            <a href="{% url 'mailings:recipient_update' object.pk %}" class="btn btn-warning">Редактировать</a>
+            <a href="{% url 'mailings:recipient_delete' object.pk %}" class="btn btn-danger">Удалить</a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Информация о получателе</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Email:</strong> {{ object.email }}</p>
+                    <p><strong>Ф.И.О.:</strong> {{ object.full_name }}</p>
+                    <p><strong>Комментарий:</strong> {{ object.comment|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Рассылки для этого получателя</h5>
+                </div>
+                <div class="card-body">
+                    {% if object.mailings.exists %}
+                        <ul class="list-group">
+                            {% for mailing in object.mailings.all %}
+                                <li class="list-group-item">
+                                    <a href="{% url 'mailings:mailing_detail' mailing.pk %}">
+                                        Рассылка #{{ mailing.id }} - {{ mailing.message.subject }}
+                                    </a>
+                                    <br>
+                                    <small class="text-muted">
+                                        Период: {{ mailing.start_time|date:"d.m.Y H:i" }} - {{ mailing.end_time|date:"d.m.Y H:i" }}
+                                    </small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Нет рассылок для этого получателя</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>История попыток отправки</h5>
+        </div>
+        <div class="card-body">
+            {% if object.attempts.exists %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Рассылка</th>
+                                <th>Статус</th>
+                                <th>Ответ сервера</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attempt in object.attempts.all|slice:":10" %}
+                                <tr>
+                                    <td>{{ attempt.attempt_time|date:"d.m.Y H:i:s" }}</td>
+                                    <td>
+                                        <a href="{% url 'mailings:mailing_detail' attempt.mailing.pk %}">
+                                            Рассылка #{{ attempt.mailing.id }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if attempt.status == 'success' %}
+                                            <span class="badge bg-success">Успешно</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Ошибка</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ attempt.server_response|truncatechars:50 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">Нет попыток отправки для этого получателя</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

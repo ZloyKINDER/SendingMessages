@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Редактирование{% else %}Создание{% endif %} рассылки{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>{% if object %}Редактирование{% else %}Создание{% endif %} рассылки</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.start_time.id_for_label }}" class="form-label">{{ form.start_time.label }}</label>
+                        {{ form.start_time.errors }}
+                        <input type="datetime-local" 
+                               name="{{ form.start_time.name }}" 
+                               id="{{ form.start_time.id_for_label }}" 
+                               class="form-control {% if form.start_time.errors %}is-invalid{% endif %}"
+                               value="{{ form.start_time.value|date:'Y-m-d\\TH:i'|default:'' }}"
+                               required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.end_time.id_for_label }}" class="form-label">{{ form.end_time.label }}</label>
+                        {{ form.end_time.errors }}
+                        <input type="datetime-local" 
+                               name="{{ form.end_time.name }}" 
+                               id="{{ form.end_time.id_for_label }}" 
+                               class="form-control {% if form.end_time.errors %}is-invalid{% endif %}"
+                               value="{{ form.end_time.value|date:'Y-m-d\\TH:i'|default:'' }}"
+                               required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.message.id_for_label }}" class="form-label">{{ form.message.label }}</label>
+                        {{ form.message.errors }}
+                        <select name="{{ form.message.name }}" 
+                                id="{{ form.message.id_for_label }}" 
+                                class="form-control {% if form.message.errors %}is-invalid{% endif %}"
+                                required>
+                            <option value="">Выберите сообщение</option>
+                            {% for message in form.message.field.queryset %}
+                                <option value="{{ message.id }}" {% if form.message.value|stringformat:"s" == message.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ message.subject }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.recipients.id_for_label }}" class="form-label">{{ form.recipients.label }}</label>
+                        {{ form.recipients.errors }}
+                        <select name="{{ form.recipients.name }}" 
+                                id="{{ form.recipients.id_for_label }}" 
+                                class="form-control {% if form.recipients.errors %}is-invalid{% endif %}"
+                                multiple
+                                size="5"
+                                required>
+                            {% for recipient in form.recipients.field.queryset %}
+                                <option value="{{ recipient.id }}" {% if recipient.id in form.recipients.value %}selected{% endif %}>
+                                    {{ recipient.full_name }} ({{ recipient.email }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Удерживайте Ctrl для выбора нескольких получателей</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'mailings:mailing_list' %}" class="btn btn-secondary">Отмена</a>
+                        <button type="submit" class="btn btn-primary">
+                            {% if object %}Сохранить{% else %}Создать{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Управление пользователями{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Управление пользователями</h1>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Имя</th>
+                    <th>Фамилия</th>
+                    <th>Телефон</th>
+                    <th>Страна</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user_item in users %}
+                <tr>
+                    <td>{{ user_item.email }}</td>
+                    <td>{{ user_item.first_name|default:"-" }}</td>
+                    <td>{{ user_item.last_name|default:"-" }}</td>
+                    <td>{{ user_item.phone|default:"-" }}</td>
+                    <td>{{ user_item.country|default:"-" }}</td>
+                    <td>
+                        {% if user_item.is_blocked %}
+                            <span class="badge bg-danger">Заблокирован</span>
+                        {% else %}
+                            <span class="badge bg-success">Активен</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user_item != user %}
+                            <a href="{% url 'users:block_user' user_item.id %}" class="btn btn-sm {% if user_item.is_blocked %}btn-success{% else %}btn-warning{% endif %}">
+                                {% if user_item.is_blocked %}Разблокировать{% else %}Заблокировать{% endif %}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">Текущий пользователь</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
