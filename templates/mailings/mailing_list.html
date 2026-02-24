@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Рассылки{% endblock %}
+{% block title %}Мои рассылки{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -10,7 +10,13 @@
             <i class="bi bi-plus"></i> Создать рассылку
         </a>
     </div>
-    
+
+    <!-- Отладочная информация -->
+    <div class="alert alert-info">
+        <strong>Отладка:</strong> Найдено {{ mailings|length }} рассылок
+    </div>
+
+    {% if mailings %}
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -28,7 +34,7 @@
                 {% for mailing in mailings %}
                 <tr>
                     <td>{{ mailing.id }}</td>
-                    <td>{{ mailing.message.subject }}</td>
+                    <td>{{ mailing.message.subject|default:"Без темы" }}</td>
                     <td>{{ mailing.start_time|date:"d.m.Y H:i" }}</td>
                     <td>{{ mailing.end_time|date:"d.m.Y H:i" }}</td>
                     <td>
@@ -51,8 +57,10 @@
                     </td>
                     <td>
                         <a href="{% url 'mailings:mailing_detail' mailing.pk %}" class="btn btn-sm btn-info">Просмотр</a>
-                        <a href="{% url 'mailings:mailing_update' mailing.pk %}" class="btn btn-sm btn-warning">Редактировать</a>
-                        <a href="{% url 'mailings:mailing_delete' mailing.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                        {% if mailing.owner == user %}
+                            <a href="{% url 'mailings:mailing_update' mailing.pk %}" class="btn btn-sm btn-warning">Редактировать</a>
+                            <a href="{% url 'mailings:mailing_delete' mailing.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}
@@ -63,5 +71,10 @@
             </tbody>
         </table>
     </div>
+    {% else %}
+    <div class="alert alert-warning">
+        <p class="mb-0">У вас пока нет рассылок. <a href="{% url 'mailings:mailing_create' %}">Создайте первую рассылку</a></p>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -12,6 +12,9 @@ urlpatterns = [
     path('list/', views.UserListView.as_view(), name='user_list'),
     path('block/<int:user_id>/', views.block_user, name='block_user'),
 
+    path('resend-verification/', views.resend_verification, name='resend_verification'),
+    path('verify-email/<str:token>/', views.verify_email, name='verify_email'),
+
     # Восстановление пароля
     path('password-reset/',
          auth_views.PasswordResetView.as_view(

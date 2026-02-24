@@ -12,11 +12,14 @@
                     {% if object.is_active %}Отключить{% else %}Включить{% endif %}
                 </a>
             {% endif %}
-            <a href="{% url 'mailings:send_mailing' object.pk %}" class="btn btn-success">
-                Запустить сейчас
-            </a>
-            <a href="{% url 'mailings:mailing_update' object.pk %}" class="btn btn-warning">Редактировать</a>
-            <a href="{% url 'mailings:mailing_delete' object.pk %}" class="btn btn-danger">Удалить</a>
+
+            {% if object.owner == user %}
+                <a href="{% url 'mailings:send_mailing' object.pk %}" class="btn btn-success">
+                    Запустить сейчас
+                </a>
+                <a href="{% url 'mailings:mailing_update' object.pk %}" class="btn btn-warning">Редактировать</a>
+                <a href="{% url 'mailings:mailing_delete' object.pk %}" class="btn btn-danger">Удалить</a>
+            {% endif %}
         </div>
     </div>
     
@@ -104,6 +107,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                    {% if object.owner == user or perms.mailings.can_view_all_mailings %}
                         {% for attempt in attempts %}
                         <tr>
                             <td>{{ attempt.attempt_time|date:"d.m.Y H:i:s" }}</td>
@@ -122,6 +126,9 @@
                             <td colspan="4" class="text-center">Нет попыток отправки</td>
                         </tr>
                         {% endfor %}
+                    {% else %}
+                        <p class="text-muted">У вас нет прав для просмотра этой информации</p>
+                    {% endif %}
                     </tbody>
                 </table>
             </div>

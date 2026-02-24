@@ -10,12 +10,21 @@
                 <h3 class="text-center">Вход в систему</h3>
             </div>
             <div class="card-body">
+                {% if need_verification %}
+                    <div class="alert alert-warning">
+                        <p>Ваш email не подтвержден.
+                           <a href="{% url 'users:resend_verification' %}">Отправить письмо повторно</a>
+                        </p>
+                    </div>
+                {% endif %}
+
                 <form method="post">
                     {% csrf_token %}
-                    
+
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" id="email" required>
+                        <input type="email" name="email" class="form-control" id="email"
+                               value="{{ email|default:'' }}" required>
                     </div>
                     
                     <div class="mb-3">
